@@ -7,11 +7,9 @@
 
 <script>
 import MainTabBar from './components/content/mainTabbar/MainTabBar.vue'
-import router from './router/index';
 
 export default {
   name: 'App',
-  router,
   components: {
     MainTabBar
   }
