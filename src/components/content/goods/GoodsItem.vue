@@ -1,6 +1,6 @@
 <template>
   <div class="goodsItem">
-    <img :src="good.show.img" alt="">
+    <img :src="good.show.img" alt="" @load="imgLoad()">
     <div class="goodInfo">
     <p class="goodTitle">{{good.title}}</p>
     <div class="detail">
@@ -20,6 +20,13 @@ export default {
         default(){
           return {}
         }
+      }
+    },
+    methods:{
+      //img完成加载回调的函数
+      imgLoad(){
+        // console.log('---------');
+        this.$bus.$emit('imgLoad')
       }
     }
 }

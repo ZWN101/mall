@@ -3,11 +3,14 @@
       <nav-bar class="homeNav">
         <div slot="content">购物街</div>
       </nav-bar>
+      <scroll class="scrollContent" :probeType="3" :pullUpLoad="true" @loadMore="loadMore" @scroll="scroll" ref="scroll">
       <home-swiper :banners="banners"></home-swiper>
       <recommend-view :recommends="recommends"></recommend-view>
       <feature-view></feature-view>
       <tab-control class="tabControl" :titles="['流行','新款','精选']" @tabClick="tabClick"></tab-control>
       <goods :goods="showGoods"></goods>
+      </scroll>
+      <back-top @click.native="backTop()" v-show="isShowBack"></back-top>
   </div>
 </template>
 
@@ -18,13 +21,15 @@ import RecommendView from './childComps/RecommendView.vue';
 import FeatureView from './childComps/FeatureView.vue';
 import TabControl from '../../components/common/tabControl/TabControl.vue';
 import Goods from 'components/content/goods/Goods.vue';
+import Scroll from 'components/common/scroll/Scroll.vue';
+import BackTop from 'components/content/backTop/BackTop.vue';
 
 
 import {getHomeMultidata,getGoods} from 'network/home';
 
 export default {
   name:'Home',
-  components: {NavBar,HomeSwiper, RecommendView, FeatureView, TabControl, Goods},
+  components: {NavBar,HomeSwiper, RecommendView, FeatureView, TabControl, Goods, Scroll, BackTop},
   data(){
     return {
       banners:[],
@@ -43,7 +48,8 @@ export default {
           list:[]
         }
       },
-      currentType:'pop'
+      currentType:'pop',
+      isShowBack:false
     }
   },
   created(){
@@ -52,12 +58,39 @@ export default {
       this.getGoods('new');
       this.getGoods('sell');
   },
+  mounted(){
+    // this.$refs.scroll.scroll.on("scroll",(position)=>{
+    //   console.log(position);
+    // })
+    const refresh=this.debounce(this.$refs.scroll.refresh,200);
+    this.$bus.$on('imgLoad',()=>{
+      // console.log('完成图片加载')
+      /**
+       * 调用refresh()的次数过多，可以利用防抖函数，在第一次触发refresh事件的之后给一个期限（比如200ms），如果200ms之内也有图片加载完成，
+       * 则不立即执行refresh函数，只有在该期限内没有图片加载完成，则在最后一次图片加载完成时调用refresh函数
+       * 
+      */
+      // this.$refs.scroll.refresh();   
+      refresh();
+    })
+
+    },
   computed:{
     showGoods(){
       return this.goods[this.currentType].list;
     }
   },
   methods:{
+    debounce(fn,delay){
+      let timer=null;
+      return function (...args) {
+        if(timer) clearTimeout(timer)//每次完成一次图片加载（间隔时间小于200ms），就要清除一次定时器，此时定时器会重新开始计时
+        timer=setTimeout(()=>{
+          fn.apply(this,args);
+          // console.log('----');
+        },delay);
+        }
+    },
     tabClick(index){
       // console.log(index);
       switch (index) {
@@ -71,6 +104,18 @@ export default {
           this.currentType='sell'
           break;
       }
+    },
+    //上拉加载更多
+    loadMore(){
+      this.getGoods(this.currentType);
+    },
+    scroll(position){
+      // console.log(position);
+      this.isShowBack=(-position.y)>2000
+    },
+    backTop(){
+      // console.log("返回顶部");
+      this.$refs.scroll.scrollTo(0,0,1000);
     },
     //网络请求
     getHomeMultidata(){
@@ -95,8 +140,9 @@ export default {
 
 <style>
 .home{
-  padding-top: 44px;
-  padding-bottom: 600px;
+  height: 100vh;
+  /* padding-top: 44px; */
+  position: relative;
 }
 .homeNav{
   background-color: var(--color-tint);
@@ -107,9 +153,18 @@ export default {
   right: 0px;
   z-index: 10;
 }
-.tabControl{
+/* .tabControl{
   position: sticky;
   top: 44px;
   z-index: 10;
+} */
+.scrollContent{
+  position: absolute;
+  top: 44px;
+  bottom: 49px;
+  left: 0px;
+  right: 0px;
+  /* height: calc(100%-93px); */
+  overflow: hidden;
 }
 </style>
