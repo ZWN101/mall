@@ -24,7 +24,7 @@ import Goods from 'components/content/goods/Goods.vue';
 import Scroll from 'components/common/scroll/Scroll.vue';
 import BackTop from 'components/content/backTop/BackTop.vue';
 
-
+import {debounce} from 'common/utils';
 import {getHomeMultidata,getGoods} from 'network/home';
 
 export default {
@@ -62,7 +62,8 @@ export default {
     // this.$refs.scroll.scroll.on("scroll",(position)=>{
     //   console.log(position);
     // })
-    const refresh=this.debounce(this.$refs.scroll.refresh,200);
+    //图片加载完成监听
+    const refresh=debounce(this.$refs.scroll.refresh,200);
     this.$bus.$on('imgLoad',()=>{
       // console.log('完成图片加载')
       /**
@@ -81,16 +82,6 @@ export default {
     }
   },
   methods:{
-    debounce(fn,delay){
-      let timer=null;
-      return function (...args) {
-        if(timer) clearTimeout(timer)//每次完成一次图片加载（间隔时间小于200ms），就要清除一次定时器，此时定时器会重新开始计时
-        timer=setTimeout(()=>{
-          fn.apply(this,args);
-          // console.log('----');
-        },delay);
-        }
-    },
     tabClick(index){
       // console.log(index);
       switch (index) {
@@ -132,6 +123,8 @@ export default {
         this.goods[type].page=page;
         //...——>解析数组为一个个的数值
         this.goods[type].list.push(...res.data.list);
+        //完成上拉加载更多
+        this.$refs.scroll.finishPullUp();
       })
     }
   }

@@ -35,14 +35,24 @@ export default {
             pullUpLoad:this.pullUpLoad,
             click:true
         });
-        this.scroll.on('pullingUp',()=>{
+        //上拉加载更多
+        if(this.pullUpLoad){
+            this.scroll.on('pullingUp',()=>{
             // console.log('上拉加载更多');
             this.$emit('loadMore')
-            this.scroll.finishPullUp();
         });
-        this.scroll.on('scroll',(position)=>{
-            this.$emit("scroll",position)
+        }
+        //监听滚动
+        /**
+         * 2 手动滚动，不带惯性
+         * 3 带惯性
+         */
+        if(this.probeType===2||this.probeType===3){
+            this.scroll.on('scroll',(position)=>{
+               this.$emit("scroll",position)
         })
+        }
+       
     },
     methods:{
         scrollTo(x,y,time=2000){
@@ -50,6 +60,9 @@ export default {
         },
         refresh(){
              this.scroll&&this.scroll.refresh();
+        },
+        finishPullUp(){
+            this.scroll&&this.scroll.finishPullUp();
         }
     }
 }
