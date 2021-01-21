@@ -63,6 +63,10 @@ export default {
         },
         finishPullUp(){
             this.scroll&&this.scroll.finishPullUp();
+        },
+        scrollY(){
+            return this.scroll?this.scroll.y:0
+            // console.log(this.scroll);
         }
     }
 }

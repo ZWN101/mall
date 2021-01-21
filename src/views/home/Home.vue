@@ -3,11 +3,12 @@
       <nav-bar class="homeNav">
         <div slot="content">购物街</div>
       </nav-bar>
+      <tab-control class="tabFixed" :titles="['流行','新款','精选']" @tabClick="tabClick" v-show="isTabFixed" ref="tabControl1"></tab-control>
       <scroll class="scrollContent" :probeType="3" :pullUpLoad="true" @loadMore="loadMore" @scroll="scroll" ref="scroll">
-      <home-swiper :banners="banners"></home-swiper>
+      <home-swiper :banners="banners" @swiperImgLoad="swiperImgLoad"></home-swiper>
       <recommend-view :recommends="recommends"></recommend-view>
       <feature-view></feature-view>
-      <tab-control class="tabControl" :titles="['流行','新款','精选']" @tabClick="tabClick"></tab-control>
+      <tab-control class="tabControl" :titles="['流行','新款','精选']" @tabClick="tabClick" ref="tabControl2"></tab-control>
       <goods :goods="showGoods"></goods>
       </scroll>
       <back-top @click.native="backTop()" v-show="isShowBack"></back-top>
@@ -49,7 +50,10 @@ export default {
         }
       },
       currentType:'pop',
-      isShowBack:false
+      isShowBack:false,
+      tabOffsetTop:0,
+      isTabFixed:false,
+      scrollY:0
     }
   },
   created(){
@@ -59,9 +63,6 @@ export default {
       this.getGoods('sell');
   },
   mounted(){
-    // this.$refs.scroll.scroll.on("scroll",(position)=>{
-    //   console.log(position);
-    // })
     //图片加载完成监听
     const refresh=debounce(this.$refs.scroll.refresh,200);
     this.$bus.$on('imgLoad',()=>{
@@ -75,6 +76,18 @@ export default {
       refresh();
     })
 
+    //获取tabControl距离顶部的距离
+    // console.log(this.$refs.tabControl.$el.offsetTop);
+    },
+    activated(){
+      // console.log('home展示')
+      this.$refs.scroll.scrollTo(0,this.scrollY,0)
+    },
+    deactivated(){
+      // console.log('home不展示')
+      //记录离开之前的位置
+      this.scrollY=this.$refs.scroll.scrollY()
+      this.$refs.scroll.refresh();
     },
   computed:{
     showGoods(){
@@ -82,6 +95,12 @@ export default {
     }
   },
   methods:{
+    //轮播图加载完成调用
+    swiperImgLoad(){
+      // console.log('轮播图加载完成调用');
+      // console.log(this.$refs.tabControl.$el.offsetTop);
+      this.tabOffsetTop=this.$refs.tabControl2.$el.offsetTop;
+    },
     tabClick(index){
       // console.log(index);
       switch (index) {
@@ -95,6 +114,8 @@ export default {
           this.currentType='sell'
           break;
       }
+      this.$refs.tabControl1.currentIndex=index;
+      this.$refs.tabControl2.currentIndex=index;
     },
     //上拉加载更多
     loadMore(){
@@ -103,6 +124,8 @@ export default {
     scroll(position){
       // console.log(position);
       this.isShowBack=(-position.y)>2000
+      // console.log((-position.y)>this.tabOffsetTop);
+      this.isTabFixed=(-position.y)>this.tabOffsetTop
     },
     backTop(){
       // console.log("返回顶部");
@@ -140,10 +163,14 @@ export default {
 .homeNav{
   background-color: var(--color-tint);
   color: #fff;
-  position: fixed;
+  /* position: fixed;
   left: 0px;
   top: 0px;
   right: 0px;
+  z-index: 10; */
+}
+.tabFixed{
+  position: relative;
   z-index: 10;
 }
 /* .tabControl{
