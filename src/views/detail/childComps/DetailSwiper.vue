@@ -1,7 +1,9 @@
 <template>
   <div>
-      <swiper>
-          <swiper-item></swiper-item>
+      <swiper class="detailSwiper">
+          <swiper-item v-for="item in topImages">
+            <img :src="item" alt="">
+          </swiper-item>
       </swiper>
   </div>
 </template>
@@ -14,10 +16,20 @@ import {getDetail} from 'network/detail.js';
 export default {
   name:'DetailSwiper',
   components: { Swiper,SwiperItem },
+  props:{
+    topImages:{
+      type:Array,
+      default(){
+        return []
+      }
+    }
+  }
 
 }
 </script>
 
 <style>
-
+.detailSwiper{
+  height: 300px;
+}
 </style>

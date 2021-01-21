@@ -82,12 +82,12 @@ export default {
     activated(){
       // console.log('home展示')
       this.$refs.scroll.scrollTo(0,this.scrollY,0)
+      this.$refs.scroll.refresh();
     },
     deactivated(){
       // console.log('home不展示')
       //记录离开之前的位置
       this.scrollY=this.$refs.scroll.scrollY()
-      this.$refs.scroll.refresh();
     },
   computed:{
     showGoods(){
