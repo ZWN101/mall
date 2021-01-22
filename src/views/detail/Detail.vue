@@ -1,10 +1,11 @@
 <template>
   <div class="detail">
       <detail-nav-bar class="detailNav"></detail-nav-bar>
-      <scroll class="detailScroll">
+      <scroll class="detailScroll" ref="scroll">
       <detail-swiper :topImages="topImages"></detail-swiper>
       <detail-base-info :goodsInfo='goodsInfo'></detail-base-info>
       <detail-shop-info :shop="shop"></detail-shop-info>
+      <detail-good-info :detailInfo="detailInfo" @imageLoad="imageLoad"></detail-good-info>
       </scroll>
   </div>
 </template>
@@ -15,18 +16,20 @@ import DetailSwiper from './childComps/DetailSwiper.vue';
 import DetailBaseInfo from './childComps/DetailBaseInfo.vue';
 import DetailShopInfo from './childComps/DetailShopInfo.vue';
 import Scroll from 'components/common/scroll/Scroll.vue';
+import DetailGoodInfo from './childComps/DetailGoodInfo.vue';
 
 import {getDetail,GoodsInfo,Shop} from '../../network/detail';
 
 export default {
     name:'Detail',
-    components: { DetailNavBar,DetailSwiper,DetailBaseInfo, Scroll, DetailShopInfo},
+    components: { DetailNavBar,DetailSwiper,DetailBaseInfo, Scroll, DetailShopInfo, DetailGoodInfo},
     data(){
         return {
             iid:null,
             topImages:[],
             goodsInfo:{},
-            shop:{}
+            shop:{},
+            detailInfo: {}
         }
     },
     created(){
@@ -45,8 +48,16 @@ export default {
             //获取店铺信息
              this.shop=new Shop(data.shopInfo);
              console.log(this.shop);
+
+             //获取商品详情
+             this.detailInfo=data.detailInfo;
             
         })
+    },
+    methods:{
+        imageLoad(){
+            this.$refs.scroll.refresh();
+        }
     }
 }
 </script>
