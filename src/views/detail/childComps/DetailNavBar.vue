@@ -5,7 +5,7 @@
             <img src="~assets/img/common/back.svg" alt="">
         </div>
           <div slot="content" class="titles">
-            <div  v-for="(item,index) in titles" :class="{activ:currentIndex===index}" @click="itemClick(index)">
+            <div  v-for="(item,index) in titles" :class="{activ:currentIndex===index}" @click="itemClick(index)" class="titleItem">
                {{item}}
             </div>
           </div>
@@ -43,8 +43,10 @@ export default {
 }
 .titles{
   display: flex;
-  justify-content: space-around;
   font-size: 14px;
+}
+.titleItem{
+  flex: 1;
 }
  .activ{
   color: var(--color-high-text);

@@ -2,7 +2,7 @@
       <swiper>
           <swiper-item v-for="item in banners">
               <a :href="item.link">
-                  <img :src="item.image" alt="" @load="imgLoad">
+                  <img :src="item.image" alt="" @load="imgLoad()">
               </a>
           </swiper-item>
       </swiper>
@@ -24,10 +24,19 @@ export default {
           }
       }
   },
+  data(){
+      return {
+          flag:true
+      }
+  },
   methods:{
       imgLoad(){
         //   console.log('轮播图加载完了')
-        this.$emit('swiperImgLoad')
+        if(this.flag){
+            this.flag=false;
+            this.$emit('swiperImgLoad')
+        }
+
       }
   }
 }
