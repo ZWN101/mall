@@ -5,7 +5,8 @@
       <detail-swiper :topImages="topImages"></detail-swiper>
       <detail-base-info :goodsInfo='goodsInfo'></detail-base-info>
       <detail-shop-info :shop="shop"></detail-shop-info>
-      <detail-good-info :detailInfo="detailInfo" @imageLoad="imageLoad"></detail-good-info>
+      <!-- <detail-good-info :detailInfo="detailInfo" @imageLoad="imageLoad"></detail-good-info> -->
+      <detail-param-info :goodsParam="goodsParam"></detail-param-info>
       </scroll>
   </div>
 </template>
@@ -17,19 +18,21 @@ import DetailBaseInfo from './childComps/DetailBaseInfo.vue';
 import DetailShopInfo from './childComps/DetailShopInfo.vue';
 import Scroll from 'components/common/scroll/Scroll.vue';
 import DetailGoodInfo from './childComps/DetailGoodInfo.vue';
+import DetailParamInfo from './childComps/DetailParamInfo.vue';
 
-import {getDetail,GoodsInfo,Shop} from '../../network/detail';
+import {getDetail,GoodsInfo,Shop,GoodsParam} from '../../network/detail';
 
 export default {
     name:'Detail',
-    components: { DetailNavBar,DetailSwiper,DetailBaseInfo, Scroll, DetailShopInfo, DetailGoodInfo},
+    components: { DetailNavBar,DetailSwiper,DetailBaseInfo, Scroll, DetailShopInfo, DetailGoodInfo, DetailParamInfo},
     data(){
         return {
             iid:null,
             topImages:[],
             goodsInfo:{},
             shop:{},
-            detailInfo: {}
+            detailInfo: {},
+            goodsParam:{}
         }
     },
     created(){
@@ -51,6 +54,9 @@ export default {
 
              //获取商品详情
              this.detailInfo=data.detailInfo;
+
+             //获取商品尺寸和参数等
+             this.goodsParam=new GoodsParam(data.itemParams.info,data.itemParams.rule)
             
         })
     },
