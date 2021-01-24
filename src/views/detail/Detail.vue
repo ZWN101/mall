@@ -1,14 +1,14 @@
 <template>
   <div class="detail">
-      <detail-nav-bar class="detailNav"></detail-nav-bar>
-      <scroll class="detailScroll" ref="scroll">
+      <detail-nav-bar class="detailNav" @changeTab="changeTab" ref="detailNavBar"></detail-nav-bar>
+      <scroll class="detailScroll" ref="scroll" :probeType="3" @scroll="scroll">
       <detail-swiper :topImages="topImages"></detail-swiper>
       <detail-base-info :goodsInfo='goodsInfo'></detail-base-info>
       <detail-shop-info :shop="shop"></detail-shop-info>
-      <!-- <detail-good-info :detailInfo="detailInfo" @imageLoad="imageLoad"></detail-good-info> -->
-      <detail-param-info :goodsParam="goodsParam"></detail-param-info>
-      <detail-comment-info :comment="comment"></detail-comment-info>
-      <goods :goods="recommends"></goods>
+      <detail-good-info :detailInfo="detailInfo" @imageLoad="imageLoad"></detail-good-info>
+      <detail-param-info :goodsParam="goodsParam" ref="param"></detail-param-info>
+      <detail-comment-info :comment="comment" ref="comment"></detail-comment-info>
+      <goods :goods="recommends" ref="recommend"></goods>
       </scroll>
   </div>
 </template>
@@ -41,7 +41,8 @@ export default {
             goodsParam:{},
             comment:{},
             recommends:[],
-            
+            themeTopYs:[],
+            currentIndex:0            
         }
     },
     mixins:[itemListenerMixin],
@@ -88,9 +89,46 @@ export default {
     destroyed(){
         this.$bus.$off('imgLoad',this.itemImageListener);
     },
+    updated(){
+        
+    },
     methods:{
         imageLoad(){
             this.$refs.scroll.refresh();
+            this.themeTopYs.push(0);
+            this.themeTopYs.push(this.$refs.param.$el.offsetTop);
+            this.themeTopYs.push(this.$refs.comment.$el.offsetTop);
+            this.themeTopYs.push(this.$refs.recommend.$el.offsetTop);
+            // console.log(this.themeTopYs);
+
+            /**
+             * 不能将this.themeTopYs的赋值放在created里，因为此时组件还未被创建
+             * 
+             * 不能放在mounted里，因为DetailGoodInfo.vue组件的根部是一个v-if判断，而向服务器请求是个异步函数，这个时候数据还未被请求过来
+             * 当请求过来之后会调用beforeUpdate和update函数，可以将赋值放在update里，但会出现图片未完全加载完的现象，获取的数据不准确
+             * 
+             * 或者可以在异步请求的回调函数里加上,this.$nextTick里，但是图片高度没有被完全计算在内
+             */
+        },
+        //改变tab栏
+        changeTab(index){
+            // console.log(index);
+            this.$refs.scroll.scrollTo(0,-this.themeTopYs[index],0);
+        },
+        //监听滚动
+        scroll(position){
+            // console.log(position);
+            //判断滚动的位置改变currentIndex
+            let y=-position.y
+            let length=this.themeTopYs.length
+            // 0 1 2 3
+            for(let i=0;i<length;i++){
+                if(this.currentIndex!=i && ((i<length-1 && y>this.themeTopYs[i] && y<=this.themeTopYs[i+1])||(i==length-1 && y>this.themeTopYs[i]))){
+                    this.currentIndex=i;
+                    this.$refs.detailNavBar.currentIndex=i;
+                    console.log(i)
+                }
+            }
         }
     }
 }
