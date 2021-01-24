@@ -25,7 +25,7 @@ import Goods from 'components/content/goods/Goods.vue';
 import Scroll from 'components/common/scroll/Scroll.vue';
 import BackTop from 'components/content/backTop/BackTop.vue';
 
-import {debounce} from 'common/utils';
+import {itemListenerMixin} from 'common/mixin.js';
 import {getHomeMultidata,getGoods} from 'network/home';
 
 export default {
@@ -53,9 +53,11 @@ export default {
       isShowBack:false,
       tabOffsetTop:0,
       isTabFixed:false,
-      scrollY:0
+      scrollY:0,
+      
     }
   },
+  mixins:[itemListenerMixin],
   created(){
       this.getHomeMultidata();
       this.getGoods('pop');
@@ -64,17 +66,11 @@ export default {
   },
   mounted(){
     //图片加载完成监听
-    const refresh=debounce(this.$refs.scroll.refresh,200);
-    this.$bus.$on('imgLoad',()=>{
-      // console.log('完成图片加载')
       /**
        * 调用refresh()的次数过多，可以利用防抖函数，在第一次触发refresh事件的之后给一个期限（比如200ms），如果200ms之内也有图片加载完成，
        * 则不立即执行refresh函数，只有在该期限内没有图片加载完成，则在最后一次图片加载完成时调用refresh函数
        * 
       */
-      // this.$refs.scroll.refresh();   
-      refresh();
-    })
 
     //获取tabControl距离顶部的距离
     // console.log(this.$refs.tabControl.$el.offsetTop);
@@ -88,6 +84,9 @@ export default {
       // console.log('home不展示')
       //记录离开之前的位置
       this.scrollY=this.$refs.scroll.scrollY()
+
+      //离开之后取消图片加载的事件总线
+      this.$bus.$off('imgLoad',this.itemImageListener);
     },
   computed:{
     showGoods(){

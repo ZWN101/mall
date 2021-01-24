@@ -1,5 +1,4 @@
 <template>
-  <div>
       <nav-bar class="detailNavBar">
         <div slot="left" @click="backClick()">
             <img src="~assets/img/common/back.svg" alt="">
@@ -10,7 +9,6 @@
             </div>
           </div>
       </nav-bar>
-  </div>
 </template>
 
 <script>

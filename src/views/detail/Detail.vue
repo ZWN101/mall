@@ -8,6 +8,7 @@
       <!-- <detail-good-info :detailInfo="detailInfo" @imageLoad="imageLoad"></detail-good-info> -->
       <detail-param-info :goodsParam="goodsParam"></detail-param-info>
       <detail-comment-info :comment="comment"></detail-comment-info>
+      <goods :goods="recommends"></goods>
       </scroll>
   </div>
 </template>
@@ -20,14 +21,16 @@ import DetailShopInfo from './childComps/DetailShopInfo.vue';
 import DetailGoodInfo from './childComps/DetailGoodInfo.vue';
 import DetailParamInfo from './childComps/DetailParamInfo.vue';
 import DetailCommentInfo from './childComps/DetailCommentInfo.vue';
+import Goods from '../../components/content/goods/Goods';
 
 import Scroll from 'components/common/scroll/Scroll.vue';
 
-import {getDetail,GoodsInfo,Shop,GoodsParam} from '../../network/detail';
+import {itemListenerMixin} from 'common/mixin.js';
+import {getDetail,GoodsInfo,Shop,GoodsParam,getRecommends} from '../../network/detail';
 
 export default {
     name:'Detail',
-    components: { DetailNavBar,DetailSwiper,DetailBaseInfo, Scroll, DetailShopInfo, DetailGoodInfo, DetailParamInfo, DetailCommentInfo},
+    components: { DetailNavBar,DetailSwiper,DetailBaseInfo, Scroll, DetailShopInfo, DetailGoodInfo, DetailParamInfo, DetailCommentInfo, Goods},
     data(){
         return {
             iid:null,
@@ -36,9 +39,12 @@ export default {
             shop:{},
             detailInfo: {},
             goodsParam:{},
-            comment:{}
+            comment:{},
+            recommends:[],
+            
         }
     },
+    mixins:[itemListenerMixin],
     created(){
         this.iid=this.$route.params.iid;
         // console.log(this.iid);
@@ -66,8 +72,21 @@ export default {
              if(data.rate.cRate){
                  this.comment=data.rate.list[0];
              }
+
+             //获取推荐商品
+             getRecommends().then(res=>{
+                //  console.log(res);
+                this.recommends=res.data.list;
+                console.log(this.recommends);
+             })
             
         })
+    },
+    mounted(){
+    //    console.log('detail')
+    },
+    destroyed(){
+        this.$bus.$off('imgLoad',this.itemImageListener);
     },
     methods:{
         imageLoad(){
@@ -87,14 +106,15 @@ export default {
 .detailNav{
     background-color: #fff;
     position: relative;
-    z-index: 10;
+    top: -3px;
+    z-index: 11;
 }
 .detailScroll{
-    height: calc(100% - 44px);
-    /* position: absolute;
+    /* height: calc(100% - 44px); */
+    position: absolute;
     top: 44px;
     left: 0px;
     right: 0px;
-    bottom: 0px; */
+    bottom: 0px;
 }
 </style>

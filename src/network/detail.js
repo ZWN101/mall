@@ -8,6 +8,12 @@ export function getDetail(iid) {
         }
     })
 }
+
+export function getRecommends() {
+  return request({
+    url: '/recommend'
+  })
+  }
   
 export class GoodsInfo {
     constructor(itemInfo, columns, services) {

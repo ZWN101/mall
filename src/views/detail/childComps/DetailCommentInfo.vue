@@ -16,7 +16,7 @@
         <span>{{comment.created | formatCreated}}</span>
         <span>{{comment.style}}</span>
       </div>
-      <div class="goodImg" v-if="comment.images.length">
+      <div class="goodImg" v-if="comment.images">
         <template v-for="item in comment.images">
           <img :src="item" alt="">
         </template>
