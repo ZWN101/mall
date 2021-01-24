@@ -7,6 +7,7 @@
       <detail-shop-info :shop="shop"></detail-shop-info>
       <!-- <detail-good-info :detailInfo="detailInfo" @imageLoad="imageLoad"></detail-good-info> -->
       <detail-param-info :goodsParam="goodsParam"></detail-param-info>
+      <detail-comment-info :comment="comment"></detail-comment-info>
       </scroll>
   </div>
 </template>
@@ -16,15 +17,17 @@ import DetailNavBar from './childComps/DetailNavBar.vue';
 import DetailSwiper from './childComps/DetailSwiper.vue';
 import DetailBaseInfo from './childComps/DetailBaseInfo.vue';
 import DetailShopInfo from './childComps/DetailShopInfo.vue';
-import Scroll from 'components/common/scroll/Scroll.vue';
 import DetailGoodInfo from './childComps/DetailGoodInfo.vue';
 import DetailParamInfo from './childComps/DetailParamInfo.vue';
+import DetailCommentInfo from './childComps/DetailCommentInfo.vue';
+
+import Scroll from 'components/common/scroll/Scroll.vue';
 
 import {getDetail,GoodsInfo,Shop,GoodsParam} from '../../network/detail';
 
 export default {
     name:'Detail',
-    components: { DetailNavBar,DetailSwiper,DetailBaseInfo, Scroll, DetailShopInfo, DetailGoodInfo, DetailParamInfo},
+    components: { DetailNavBar,DetailSwiper,DetailBaseInfo, Scroll, DetailShopInfo, DetailGoodInfo, DetailParamInfo, DetailCommentInfo},
     data(){
         return {
             iid:null,
@@ -32,7 +35,8 @@ export default {
             goodsInfo:{},
             shop:{},
             detailInfo: {},
-            goodsParam:{}
+            goodsParam:{},
+            comment:{}
         }
     },
     created(){
@@ -57,6 +61,11 @@ export default {
 
              //获取商品尺寸和参数等
              this.goodsParam=new GoodsParam(data.itemParams.info,data.itemParams.rule)
+
+             //获取商品评价
+             if(data.rate.cRate){
+                 this.comment=data.rate.list[0];
+             }
             
         })
     },

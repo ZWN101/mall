@@ -1,17 +1,17 @@
 <template>
   <div class="paramInfo" v-if="Object.keys(goodsParam).length!=0">
+       <table class="size" v-for="item in goodsParam.sizes">
+          <tr v-for="sizes in item">
+              <td v-for="size in sizes">{{size}}</td>
+          </tr>
+      </table>
       <table class="info">
           <tr v-for="(item,index) in goodsParam.infos">
               <td class="infoParamKey ">{{item.key}}</td>
               <td class="paramValue">{{item.value}}</td>
           </tr>
       </table>
-      <table class="size" v-for="item in goodsParam.sizes">
-          <tr v-for="sizes in item">
-              <td v-for="size in sizes">{{size}}</td>
-          </tr>
-      </table>
-      <div class="info-img" v-if="goodsParam.image.length !== 0">
+      <div class="info-img" v-if="goodsParam.image">
         <img :src="goodsParam.image" alt="">
     </div>
   </div>
@@ -44,7 +44,7 @@ export default {
     width: 100%;
     border-collapse: collapse;
 }
-.table tr{
+.paramInfo table tr{
     height: 42x;
 }
 .paramInfo table tr td {
