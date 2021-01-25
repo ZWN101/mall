@@ -23,14 +23,13 @@ import FeatureView from './childComps/FeatureView.vue';
 import TabControl from '../../components/common/tabControl/TabControl.vue';
 import Goods from 'components/content/goods/Goods.vue';
 import Scroll from 'components/common/scroll/Scroll.vue';
-import BackTop from 'components/content/backTop/BackTop.vue';
 
-import {itemListenerMixin} from 'common/mixin.js';
+import {itemListenerMixin,backTopMixin} from 'common/mixin.js';
 import {getHomeMultidata,getGoods} from 'network/home';
 
 export default {
   name:'Home',
-  components: {NavBar,HomeSwiper, RecommendView, FeatureView, TabControl, Goods, Scroll, BackTop},
+  components: {NavBar,HomeSwiper, RecommendView, FeatureView, TabControl, Goods, Scroll,backTopMixin},
   data(){
     return {
       banners:[],
@@ -50,14 +49,13 @@ export default {
         }
       },
       currentType:'pop',
-      isShowBack:false,
       tabOffsetTop:0,
       isTabFixed:false,
       scrollY:0,
       
     }
   },
-  mixins:[itemListenerMixin],
+  mixins:[itemListenerMixin,backTopMixin],
   created(){
       this.getHomeMultidata();
       this.getGoods('pop');
@@ -125,10 +123,6 @@ export default {
       this.isShowBack=(-position.y)>2000
       // console.log((-position.y)>this.tabOffsetTop);
       this.isTabFixed=(-position.y)>this.tabOffsetTop
-    },
-    backTop(){
-      // console.log("返回顶部");
-      this.$refs.scroll.scrollTo(0,0,1000);
     },
     //网络请求
     getHomeMultidata(){

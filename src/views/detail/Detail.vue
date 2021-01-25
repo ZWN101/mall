@@ -10,6 +10,8 @@
       <detail-comment-info :comment="comment" ref="comment"></detail-comment-info>
       <goods :goods="recommends" ref="recommend"></goods>
       </scroll>
+      <detail-bottom-bar></detail-bottom-bar>
+      <back-top @click.native="backTop()" v-show="isShowBack"></back-top>
   </div>
 </template>
 
@@ -22,15 +24,20 @@ import DetailGoodInfo from './childComps/DetailGoodInfo.vue';
 import DetailParamInfo from './childComps/DetailParamInfo.vue';
 import DetailCommentInfo from './childComps/DetailCommentInfo.vue';
 import Goods from '../../components/content/goods/Goods';
+import DetailBottomBar from './childComps/DetailBottomBar.vue';
+
 
 import Scroll from 'components/common/scroll/Scroll.vue';
 
-import {itemListenerMixin} from 'common/mixin.js';
+import {itemListenerMixin,backTopMixin} from 'common/mixin.js';
 import {getDetail,GoodsInfo,Shop,GoodsParam,getRecommends} from '../../network/detail';
+
 
 export default {
     name:'Detail',
-    components: { DetailNavBar,DetailSwiper,DetailBaseInfo, Scroll, DetailShopInfo, DetailGoodInfo, DetailParamInfo, DetailCommentInfo, Goods},
+    components: {
+         DetailNavBar,DetailSwiper,DetailBaseInfo, Scroll, DetailShopInfo, DetailGoodInfo, DetailParamInfo, DetailCommentInfo, 
+         Goods, DetailBottomBar},
     data(){
         return {
             iid:null,
@@ -42,10 +49,10 @@ export default {
             comment:{},
             recommends:[],
             themeTopYs:[],
-            currentIndex:0            
+            currentIndex:0,     //防止调用次数过多 
         }
     },
-    mixins:[itemListenerMixin],
+    mixins:[itemListenerMixin,backTopMixin],
     created(){
         this.iid=this.$route.params.iid;
         // console.log(this.iid);
@@ -99,6 +106,7 @@ export default {
             this.themeTopYs.push(this.$refs.param.$el.offsetTop);
             this.themeTopYs.push(this.$refs.comment.$el.offsetTop);
             this.themeTopYs.push(this.$refs.recommend.$el.offsetTop);
+            this.themeTopYs.push(Number.MAX_VALUE);
             // console.log(this.themeTopYs);
 
             /**
@@ -122,14 +130,23 @@ export default {
             let y=-position.y
             let length=this.themeTopYs.length
             // 0 1 2 3
-            for(let i=0;i<length;i++){
-                if(this.currentIndex!=i && ((i<length-1 && y>this.themeTopYs[i] && y<=this.themeTopYs[i+1])||(i==length-1 && y>this.themeTopYs[i]))){
+            for(let i=0;i<length-1;i++){
+                //数组中没有最大值时
+                // if(this.currentIndex!=i && ((i<length-1 && y>this.themeTopYs[i] && y<=this.themeTopYs[i+1])||(i==length-1 && y>this.themeTopYs[i]))){
+                //     this.currentIndex=i;
+                //     this.$refs.detailNavBar.currentIndex=i;
+                //     console.log(i)
+                // }
+                if(this.currentIndex!=i && y>this.themeTopYs[i] && y<=this.themeTopYs[i+1]){
                     this.currentIndex=i;
                     this.$refs.detailNavBar.currentIndex=i;
-                    console.log(i)
                 }
             }
+
+            //监听滚动距离显示backTop
+            this.isShowBack=(-position.y)>2000
         }
+       
     }
 }
 </script>
@@ -153,6 +170,7 @@ export default {
     top: 44px;
     left: 0px;
     right: 0px;
-    bottom: 0px;
+    bottom: 49px;
+    overflow: hidden;
 }
 </style>
