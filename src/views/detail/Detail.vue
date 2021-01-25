@@ -10,7 +10,7 @@
       <detail-comment-info :comment="comment" ref="comment"></detail-comment-info>
       <goods :goods="recommends" ref="recommend"></goods>
       </scroll>
-      <detail-bottom-bar></detail-bottom-bar>
+      <detail-bottom-bar @addCart="addCart()"></detail-bottom-bar>
       <back-top @click.native="backTop()" v-show="isShowBack"></back-top>
   </div>
 </template>
@@ -145,6 +145,17 @@ export default {
 
             //监听滚动距离显示backTop
             this.isShowBack=(-position.y)>2000
+        },
+        addCart(){
+            // console.log('将商品添加到购物车')
+            let cartItem={};
+            cartItem.iid=this.iid;
+            cartItem.img=this.topImages[0];
+            cartItem.title=this.goodsInfo.title;
+            cartItem.desc=this.goodsInfo.desc;
+            cartItem.price=this.goodsInfo.realPrice;
+
+            this.$store.commit("addCartItem",cartItem);
         }
        
     }
