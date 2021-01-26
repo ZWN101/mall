@@ -155,7 +155,8 @@ export default {
             cartItem.desc=this.goodsInfo.desc;
             cartItem.price=this.goodsInfo.realPrice;
 
-            this.$store.commit("addCartItem",cartItem);
+            // this.$store.commit("addCartItem",cartItem);
+            this.$store.dispatch('addCart',cartItem);
         }
        
     }

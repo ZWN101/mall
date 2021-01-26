@@ -1,40 +1,23 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import mutations from './mutations';
+import actions from './actions';
+import getters from './getters';
 
 Vue.use(Vuex)
 
+const state = {
+    cartItems:[]
+}
+
 const store = new Vuex.Store({
-    state: {
-        cartItems:[]
-    },
-    mutations: {
-        addCartItem(state, payload) { 
-            let product = null;
-            product = state.cartItems.find(function (item) {
-                return item.iid == payload.iid;
-            })
-            
-            // for (let item of state.cartItems) { 
-            //     if (item.iid == payload.iid) { 
-            //         product = item;
-            //     }
-            // }
-
-            if (product) {
-                product.count++;
-            } else {
-                payload.count = 1;
-                state.cartItems.push(payload);
-            }
-            console.log(state.cartItems)
-        }
-    },
-    actions: {
-
-    },
-    getters: {
-
-    }
+    state,
+    /**
+     * mutations里的一个方法最好只操作一件事情
+     */
+    mutations,
+    actions,
+    getters
 })
 
 export default store
