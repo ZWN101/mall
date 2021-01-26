@@ -20,6 +20,7 @@ export default {
         } else {
             //新添商品数量
             payload.count = 1;
+            payload.isChecked = true;
             context.commit(types.ADD_NEWITEM,payload)
         }
 
