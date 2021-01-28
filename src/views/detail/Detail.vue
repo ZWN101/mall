@@ -12,6 +12,7 @@
       </scroll>
       <detail-bottom-bar @addCart="addCart()"></detail-bottom-bar>
       <back-top @click.native="backTop()" v-show="isShowBack"></back-top>
+      <!-- <toast :message="message" :isShow="isShow"></toast> -->
   </div>
 </template>
 
@@ -23,8 +24,10 @@ import DetailShopInfo from './childComps/DetailShopInfo.vue';
 import DetailGoodInfo from './childComps/DetailGoodInfo.vue';
 import DetailParamInfo from './childComps/DetailParamInfo.vue';
 import DetailCommentInfo from './childComps/DetailCommentInfo.vue';
-import Goods from '../../components/content/goods/Goods';
 import DetailBottomBar from './childComps/DetailBottomBar.vue';
+
+import Goods from 'components/content/goods/Goods';
+import Toast from 'components/common/toast/Toast.vue';
 
 
 import Scroll from 'components/common/scroll/Scroll.vue';
@@ -37,7 +40,8 @@ export default {
     name:'Detail',
     components: {
          DetailNavBar,DetailSwiper,DetailBaseInfo, Scroll, DetailShopInfo, DetailGoodInfo, DetailParamInfo, DetailCommentInfo, 
-         Goods, DetailBottomBar},
+         Goods, DetailBottomBar,
+        Toast},
     data(){
         return {
             iid:null,
@@ -50,6 +54,8 @@ export default {
             recommends:[],
             themeTopYs:[],
             currentIndex:0,     //防止调用次数过多 
+            // message:'message',
+            // isShow:false
         }
     },
     mixins:[itemListenerMixin,backTopMixin],
@@ -156,7 +162,14 @@ export default {
             cartItem.price=this.goodsInfo.realPrice;
 
             // this.$store.commit("addCartItem",cartItem);
-            this.$store.dispatch('addCart',cartItem);
+            this.$store.dispatch('addCart',cartItem).then(res=>{
+                // this.message=res;
+                // this.isShow=true;
+                // setTimeout(function () {
+                //     this.isShow=false
+                //   },1500)
+                this.$toast.show(res)
+            })
         }
        
     }

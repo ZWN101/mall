@@ -2,20 +2,23 @@
   <div class="cartBottom">
        <div class="select"><check-box :isChecked='selectAll' @click.native="clickCheck"></check-box></div>
        <div class="total">合计{{totalPrice}}</div>
-       <div class="goComputed">
-           去计算{{}}
+       <div class="goComputed" @click="goComputed">
+           去计算({{checkedLength}})
        </div>
   </div>
 </template>
 
 <script>
 import CheckBox from 'components/content/checkBox/CheckBox';
+import {mapActions, mapGetters} from 'vuex';
+
 export default {
     name:'CartBottom',
     components:{
         CheckBox
     },
     computed:{
+         ...mapGetters(['cartItems']),
         totalPrice(){
             return "￥"+this.$store.state.cartItems.filter(item=>{
                 return item.isChecked
@@ -28,9 +31,16 @@ export default {
             return !this.$store.state.cartItems.find(item=>{
                 return item.isChecked==false
             })
+        },
+        checkedLength(){
+            return this.$store.state.cartItems.filter(item=>{
+                return item.isChecked
+            }).length
         }
     },
     methods:{
+        // ...mapActions([]),
+        //全选和全不选
         clickCheck(){
             if(this.selectAll){
                 this.$store.state.cartItems.forEach((item) => {
@@ -40,6 +50,15 @@ export default {
                  this.$store.state.cartItems.forEach(item => {
                     item.isChecked=true;
                 });
+            }
+        },
+        //去计算
+        goComputed(){
+            let flag=this.cartItems.find(item=>{
+                return item.isChecked
+            })
+            if(!flag){
+                this.$toast.show('请选择商品')
             }
         }
     }

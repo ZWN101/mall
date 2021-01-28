@@ -1,5 +1,8 @@
 export default {
-    cartItemLength(state, length, rootState) {
+    cartItemLength(state, getters, rootState) {
         return state.cartItems.length;
-     }
+    },
+    cartItems(state) { 
+        return state.cartItems
+    }
 }

@@ -13,6 +13,7 @@ export const itemListenerMixin = {
         this.itemImageListener=()=>{
            refresh();
         }
+        //接收事件总线imgLoad，第二个参数为要执行的函数
         this.$bus.$on('imgLoad', this.itemImageListener)
         // console.log('我执行了')
     }
